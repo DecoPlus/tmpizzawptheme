@@ -1,0 +1,97 @@
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 860px) {
+
+    .site-header {
+        top: 14px;
+    }
+
+    .site-header__inner {
+        min-height: 64px;
+        padding: 8px 9px 8px 17px;
+        border-radius: 20px;
+    }
+
+    .site-navigation,
+    .nav-discord {
+        display: none;
+    }
+
+    .mobile-menu-toggle {
+        display: flex;
+    }
+
+    .hero {
+        padding:
+            130px
+            20px
+            90px;
+    }
+
+    .hero__title {
+        font-size: clamp(4.2rem, 22vw, 7.5rem);
+        line-height: 0.76;
+    }
+
+    .hero__lead {
+        margin-top: 32px;
+    }
+
+    .hero__description {
+        max-width: 560px;
+    }
+
+    .hero__grid {
+        left: -50%;
+        width: 200%;
+    }
+
+}
+
+@media (max-width: 560px) {
+
+    .hero {
+        min-height: 100svh;
+    }
+
+    .hero__eyebrow {
+        letter-spacing: 0.1em;
+    }
+
+    .hero__description {
+        font-size: 0.95rem;
+        line-height: 1.65;
+    }
+
+    .hero__actions {
+        width: 100%;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    .hero__scroll {
+        display: none;
+    }
+
+    .hero__pills {
+        margin-top: 32px;
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+}

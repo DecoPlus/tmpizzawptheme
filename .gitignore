@@ -1,0 +1,21 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# VS Code local settings
+.vscode/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*~
+*.swp
+
+# Dependencies, ha később használunk ilyet
+node_modules/
+vendor/
+
+# Environment and secret files
+.env
+.env.*

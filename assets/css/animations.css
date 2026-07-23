@@ -1,0 +1,49 @@
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes heroGridMove {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 0 70px;
+    }
+}
+
+@keyframes glowFloatRed {
+    from {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(120px, 80px, 0) scale(1.12);
+    }
+}
+
+@keyframes glowFloatOrange {
+    from {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(-130px, -70px, 0) scale(1.08);
+    }
+}
+
+@keyframes scrollDot {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0);
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, 13px);
+    }
+}

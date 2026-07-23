@@ -1,0 +1,35 @@
+/*
+Theme Name: TM Pizza
+Theme URI: https://tmpizza.duckdns.org
+Author: Deco
+Description: Official custom WordPress theme for TM Pizza.
+Version: 1.0
+Requires at least: 6.0
+Tested up to: 6.8
+Requires PHP: 8.2
+License: GPL v2 or later
+Text Domain: tmpizza
+*/
+
+/* =====================================================
+   TM Pizza Theme
+   ===================================================== */
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    margin:0;
+
+    background:#090909;
+
+    color:white;
+
+    font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+}
