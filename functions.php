@@ -46,9 +46,6 @@ add_action('after_setup_theme', 'tmpizza_setup');
 
 /*
 Return an asset's modification time.
-
-This forces the browser to download the latest
-CSS or JavaScript file after every save.
 */
 
 function tmpizza_asset_version($relative_path) {
@@ -158,13 +155,25 @@ function tmpizza_assets() {
 
 
     /*
+    About
+    */
+
+    wp_enqueue_style(
+        'tmpizza-about',
+        $theme_uri . '/assets/css/about.css',
+        array('tmpizza-projects'),
+        tmpizza_asset_version('/assets/css/about.css')
+    );
+
+
+    /*
     Animations
     */
 
     wp_enqueue_style(
         'tmpizza-animations',
         $theme_uri . '/assets/css/animations.css',
-        array('tmpizza-projects'),
+        array('tmpizza-about'),
         tmpizza_asset_version('/assets/css/animations.css')
     );
 
