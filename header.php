@@ -9,6 +9,13 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+
+/*
+==========================================
+Navigation URLs
+==========================================
+*/
+
 $projects_url = get_post_type_archive_link(
     'tmpizza_project'
 );
@@ -17,15 +24,35 @@ if (!$projects_url) {
     $projects_url = home_url('/#projects');
 }
 
+
+$newsroom_url = get_post_type_archive_link(
+    'tmpizza_news'
+);
+
+if (!$newsroom_url) {
+    $newsroom_url = home_url('/newsroom/');
+}
+
+
 /*
- * Add your Discord invitation here.
- */
+==========================================
+Discord URL
+==========================================
+
+Add your Discord invitation here, for example:
+
+$discord_url = 'https://discord.gg/example';
+
+If left empty, the button goes to the
+Join section of the home page.
+*/
 
 $discord_url = '';
 
 $discord_href = $discord_url !== ''
     ? $discord_url
     : home_url('/#join');
+
 ?>
 
 <!doctype html>
@@ -96,7 +123,11 @@ get_template_part(
 
             <a
                 class="site-brand site-header__brand"
-                href="<?php echo esc_url(home_url('/')); ?>"
+                href="<?php
+                echo esc_url(
+                    home_url('/')
+                );
+                ?>"
                 aria-label="TM Pizza kezdőlap"
             >
 
@@ -110,6 +141,7 @@ get_template_part(
                 </span>
 
             </a>
+
 
             <nav
                 class="site-navigation"
@@ -127,13 +159,40 @@ get_template_part(
                     Részlegek
                 </a>
 
+
                 <a
                     href="<?php
-                    echo esc_url($projects_url);
+                    echo esc_url(
+                        $projects_url
+                    );
                     ?>"
                 >
                     Projektek
                 </a>
+
+
+                <a
+                    href="<?php
+                    echo esc_url(
+                        $newsroom_url
+                    );
+                    ?>"
+                    <?php
+                    if (
+                        is_post_type_archive(
+                            'tmpizza_news'
+                        ) ||
+                        is_singular(
+                            'tmpizza_news'
+                        )
+                    ) :
+                    ?>
+                        aria-current="page"
+                    <?php endif; ?>
+                >
+                    Newsroom
+                </a>
+
 
                 <a
                     href="<?php
@@ -144,6 +203,7 @@ get_template_part(
                 >
                     Rólunk
                 </a>
+
 
                 <a
                     href="<?php
@@ -157,6 +217,7 @@ get_template_part(
 
             </nav>
 
+
             <div class="site-header__actions">
 
                 <a
@@ -167,7 +228,9 @@ get_template_part(
                         button--primary
                     "
                     href="<?php
-                    echo esc_url($discord_href);
+                    echo esc_url(
+                        $discord_href
+                    );
                     ?>"
                     <?php if ($discord_url !== '') : ?>
                         target="_blank"
@@ -180,6 +243,7 @@ get_template_part(
                         ↗
                     </span>
                 </a>
+
 
                 <button
                     class="mobile-menu-toggle"

@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 
 /*
 ==========================================
-GitHub meta box
+Add project GitHub meta box
 ==========================================
 */
 
@@ -20,7 +20,7 @@ function tmpizza_add_github_download_meta_box() {
 
     add_meta_box(
         'tmpizza-github-download',
-        'GitHub és letöltés',
+        'GitHub-letöltés',
         'tmpizza_render_github_download_meta_box',
         'tmpizza_project',
         'normal',
@@ -34,6 +34,12 @@ add_action(
 );
 
 
+/*
+==========================================
+Render project GitHub meta box
+==========================================
+*/
+
 function tmpizza_render_github_download_meta_box(
     $post
 ) {
@@ -41,6 +47,12 @@ function tmpizza_render_github_download_meta_box(
     wp_nonce_field(
         'tmpizza_save_github_download',
         'tmpizza_github_download_nonce'
+    );
+
+    $download_enabled = get_post_meta(
+        $post->ID,
+        '_tmpizza_github_download_enabled',
+        true
     );
 
     $repository_url = get_post_meta(
@@ -55,24 +67,8 @@ function tmpizza_render_github_download_meta_box(
         true
     );
 
-    $direct_download_url = get_post_meta(
-        $post->ID,
-        '_tmpizza_github_download_url',
-        true
-    );
-
-    $button_label = get_post_meta(
-        $post->ID,
-        '_tmpizza_github_button_label',
-        true
-    );
-
     if (empty($branch)) {
         $branch = 'main';
-    }
-
-    if (empty($button_label)) {
-        $button_label = 'Letöltés GitHubról';
     }
 
     ?>
@@ -80,11 +76,49 @@ function tmpizza_render_github_download_meta_box(
     <div class="tmpizza-github-admin">
 
         <p>
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    name="tmpizza_github_download_enabled"
+                    value="yes"
+                    <?php
+                    checked(
+                        $download_enabled,
+                        'yes'
+                    );
+                    ?>
+                >
+
+                <strong>
+                    A projekt letölthető GitHubról
+                </strong>
+
+            </label>
+
+        </p>
+
+        <p class="description">
+            A letöltési gomb csak akkor jelenik meg,
+            ha ezt bepipálod, és repository-linket is
+            megadsz.
+        </p>
+
+
+        <hr style="margin:24px 0;">
+
+
+        <p>
+
             <label
                 for="tmpizza-github-repository-url"
             >
-                <strong>GitHub repository URL</strong>
+                <strong>
+                    GitHub repository linkje
+                </strong>
             </label>
+
         </p>
 
         <input
@@ -93,20 +127,29 @@ function tmpizza_render_github_download_meta_box(
             type="url"
             class="widefat"
             value="<?php
-            echo esc_attr($repository_url);
+            echo esc_attr(
+                $repository_url
+            );
             ?>"
-            placeholder="https://github.com/felhasznalo/projekt"
+            placeholder="https://github.com/felhasznalonev/projekt"
         >
 
         <p class="description">
-            A projekt GitHub repositoryjának címe.
+            Példa:
+            https://github.com/TMPizzaStudio/BpM
         </p>
 
 
         <p style="margin-top:24px;">
-            <label for="tmpizza-github-branch">
-                <strong>Letölthető branch</strong>
+
+            <label
+                for="tmpizza-github-branch"
+            >
+                <strong>
+                    Letölthető branch
+                </strong>
             </label>
+
         </p>
 
         <input
@@ -115,62 +158,19 @@ function tmpizza_render_github_download_meta_box(
             type="text"
             class="regular-text"
             value="<?php
-            echo esc_attr($branch);
+            echo esc_attr(
+                $branch
+            );
             ?>"
             placeholder="main"
         >
 
         <p class="description">
-            Ha nincs külön közvetlen letöltési URL,
-            ebből a branchből készül ZIP-letöltés.
+            Ez általában
+            <code>main</code>.
+            Régebbi repositoryknál lehet
+            <code>master</code>.
         </p>
-
-
-        <p style="margin-top:24px;">
-            <label
-                for="tmpizza-github-download-url"
-            >
-                <strong>
-                    Közvetlen GitHub-letöltési URL
-                </strong>
-            </label>
-        </p>
-
-        <input
-            id="tmpizza-github-download-url"
-            name="tmpizza_github_download_url"
-            type="url"
-            class="widefat"
-            value="<?php
-            echo esc_attr($direct_download_url);
-            ?>"
-            placeholder="https://github.com/felhasznalo/projekt/releases/latest/download/projekt.zip"
-        >
-
-        <p class="description">
-            Opcionális. Ha ki van töltve, ez felülírja
-            az automatikus branch-ZIP címet.
-        </p>
-
-
-        <p style="margin-top:24px;">
-            <label
-                for="tmpizza-github-button-label"
-            >
-                <strong>Letöltés gomb felirata</strong>
-            </label>
-        </p>
-
-        <input
-            id="tmpizza-github-button-label"
-            name="tmpizza_github_button_label"
-            type="text"
-            class="regular-text"
-            value="<?php
-            echo esc_attr($button_label);
-            ?>"
-            placeholder="Letöltés GitHubról"
-        >
 
     </div>
 
@@ -180,19 +180,30 @@ function tmpizza_render_github_download_meta_box(
 
 /*
 ==========================================
-URL validation
+Normalize and validate GitHub repository URL
 ==========================================
 */
 
-function tmpizza_sanitize_github_url($url) {
+function tmpizza_sanitize_github_repository_url(
+    $url
+) {
 
     $url = esc_url_raw(
-        trim((string) $url)
+        trim(
+            (string) $url
+        )
     );
 
     if (empty($url)) {
         return '';
     }
+
+    $scheme = strtolower(
+        (string) wp_parse_url(
+            $url,
+            PHP_URL_SCHEME
+        )
+    );
 
     $host = strtolower(
         (string) wp_parse_url(
@@ -201,22 +212,120 @@ function tmpizza_sanitize_github_url($url) {
         )
     );
 
-    $allowed_hosts = array(
-        'github.com',
-        'www.github.com',
+    $path = trim(
+        (string) wp_parse_url(
+            $url,
+            PHP_URL_PATH
+        ),
+        '/'
     );
 
-    if (!in_array($host, $allowed_hosts, true)) {
+    if ($scheme !== 'https') {
         return '';
     }
 
-    return $url;
+    if (
+        $host !== 'github.com' &&
+        $host !== 'www.github.com'
+    ) {
+        return '';
+    }
+
+    $path = preg_replace(
+        '/\.git$/i',
+        '',
+        $path
+    );
+
+    $path_parts = array_values(
+        array_filter(
+            explode(
+                '/',
+                $path
+            )
+        )
+    );
+
+    /*
+     * A repository link must contain at least:
+     *
+     * owner/repository
+     */
+
+    if (count($path_parts) < 2) {
+        return '';
+    }
+
+    $owner = sanitize_title(
+        $path_parts[0]
+    );
+
+    $repository = sanitize_title(
+        $path_parts[1]
+    );
+
+    if (
+        empty($owner) ||
+        empty($repository)
+    ) {
+        return '';
+    }
+
+    return sprintf(
+        'https://github.com/%s/%s',
+        rawurlencode($owner),
+        rawurlencode($repository)
+    );
 }
 
 
 /*
 ==========================================
-Save GitHub fields
+Sanitize GitHub branch
+==========================================
+*/
+
+function tmpizza_sanitize_github_branch(
+    $branch
+) {
+
+    $branch = trim(
+        sanitize_text_field(
+            (string) $branch
+        )
+    );
+
+    if (empty($branch)) {
+        return 'main';
+    }
+
+    /*
+     * Git branch names may contain:
+     *
+     * letters
+     * numbers
+     * dots
+     * underscores
+     * hyphens
+     * forward slashes
+     */
+
+    if (
+        !preg_match(
+            '/^[A-Za-z0-9._\/-]+$/',
+            $branch
+        )
+    ) {
+        return 'main';
+    }
+
+    return $branch;
+}
+
+
+/*
+==========================================
+Save project GitHub fields
 ==========================================
 */
 
@@ -226,7 +335,9 @@ function tmpizza_save_github_download_meta(
 
     if (
         !isset(
-            $_POST['tmpizza_github_download_nonce']
+            $_POST[
+                'tmpizza_github_download_nonce'
+            ]
         )
     ) {
         return;
@@ -234,7 +345,9 @@ function tmpizza_save_github_download_meta(
 
     $nonce = sanitize_text_field(
         wp_unslash(
-            $_POST['tmpizza_github_download_nonce']
+            $_POST[
+                'tmpizza_github_download_nonce'
+            ]
         )
     );
 
@@ -269,13 +382,34 @@ function tmpizza_save_github_download_meta(
 
 
     /*
+    Download enabled
+    */
+
+    $download_enabled = isset(
+        $_POST[
+            'tmpizza_github_download_enabled'
+        ]
+    )
+        ? 'yes'
+        : 'no';
+
+    update_post_meta(
+        $post_id,
+        '_tmpizza_github_download_enabled',
+        $download_enabled
+    );
+
+
+    /*
     Repository URL
     */
 
     $repository_url = isset(
-        $_POST['tmpizza_github_repository_url']
+        $_POST[
+            'tmpizza_github_repository_url'
+        ]
     )
-        ? tmpizza_sanitize_github_url(
+        ? tmpizza_sanitize_github_repository_url(
             wp_unslash(
                 $_POST[
                     'tmpizza_github_repository_url'
@@ -284,7 +418,7 @@ function tmpizza_save_github_download_meta(
         )
         : '';
 
-    if ($repository_url) {
+    if (!empty($repository_url)) {
 
         update_post_meta(
             $post_id,
@@ -306,90 +440,23 @@ function tmpizza_save_github_download_meta(
     */
 
     $branch = isset(
-        $_POST['tmpizza_github_branch']
+        $_POST[
+            'tmpizza_github_branch'
+        ]
     )
-        ? sanitize_text_field(
+        ? tmpizza_sanitize_github_branch(
             wp_unslash(
-                $_POST['tmpizza_github_branch']
+                $_POST[
+                    'tmpizza_github_branch'
+                ]
             )
         )
         : 'main';
-
-    if (
-        empty($branch) ||
-        !preg_match(
-            '/^[A-Za-z0-9._\/-]+$/',
-            $branch
-        )
-    ) {
-        $branch = 'main';
-    }
 
     update_post_meta(
         $post_id,
         '_tmpizza_github_branch',
         $branch
-    );
-
-
-    /*
-    Direct download URL
-    */
-
-    $download_url = isset(
-        $_POST['tmpizza_github_download_url']
-    )
-        ? tmpizza_sanitize_github_url(
-            wp_unslash(
-                $_POST[
-                    'tmpizza_github_download_url'
-                ]
-            )
-        )
-        : '';
-
-    if ($download_url) {
-
-        update_post_meta(
-            $post_id,
-            '_tmpizza_github_download_url',
-            $download_url
-        );
-
-    } else {
-
-        delete_post_meta(
-            $post_id,
-            '_tmpizza_github_download_url'
-        );
-    }
-
-
-    /*
-    Button label
-    */
-
-    $button_label = isset(
-        $_POST['tmpizza_github_button_label']
-    )
-        ? sanitize_text_field(
-            wp_unslash(
-                $_POST[
-                    'tmpizza_github_button_label'
-                ]
-            )
-        )
-        : '';
-
-    if (empty($button_label)) {
-        $button_label =
-            'Letöltés GitHubról';
-    }
-
-    update_post_meta(
-        $post_id,
-        '_tmpizza_github_button_label',
-        $button_label
     );
 }
 
@@ -401,24 +468,13 @@ add_action(
 
 /*
 ==========================================
-Build download URL
+Get repository URL
 ==========================================
 */
 
-function tmpizza_get_github_download_url(
+function tmpizza_get_github_repository_url(
     $post_id
 ) {
-
-    $direct_url = get_post_meta(
-        $post_id,
-        '_tmpizza_github_download_url',
-        true
-    );
-
-    if (!empty($direct_url)) {
-        return $direct_url;
-    }
-
 
     $repository_url = get_post_meta(
         $post_id,
@@ -430,23 +486,56 @@ function tmpizza_get_github_download_url(
         return '';
     }
 
+    return tmpizza_sanitize_github_repository_url(
+        $repository_url
+    );
+}
+
+
+/*
+==========================================
+Build GitHub ZIP download URL
+==========================================
+*/
+
+function tmpizza_get_github_download_url(
+    $post_id
+) {
+
+    $download_enabled = get_post_meta(
+        $post_id,
+        '_tmpizza_github_download_enabled',
+        true
+    );
+
+    if ($download_enabled !== 'yes') {
+        return '';
+    }
+
+    $repository_url =
+        tmpizza_get_github_repository_url(
+            $post_id
+        );
+
+    if (empty($repository_url)) {
+        return '';
+    }
+
     $branch = get_post_meta(
         $post_id,
         '_tmpizza_github_branch',
         true
     );
 
-    if (empty($branch)) {
-        $branch = 'main';
-    }
+    $branch =
+        tmpizza_sanitize_github_branch(
+            $branch
+        );
 
-    $repository_url = untrailingslashit(
-        preg_replace(
-            '/\.git$/',
-            '',
-            $repository_url
-        )
-    );
+    /*
+     * Encode the branch while retaining
+     * forward slashes used in branch names.
+     */
 
     $encoded_branch = str_replace(
         '%2F',
@@ -454,7 +543,9 @@ function tmpizza_get_github_download_url(
         rawurlencode($branch)
     );
 
-    return $repository_url
+    return untrailingslashit(
+        $repository_url
+    )
         . '/archive/refs/heads/'
         . $encoded_branch
         . '.zip';
@@ -463,7 +554,7 @@ function tmpizza_get_github_download_url(
 
 /*
 ==========================================
-Append buttons to project content
+Append GitHub buttons to project page
 ==========================================
 */
 
@@ -472,7 +563,9 @@ function tmpizza_append_github_project_buttons(
 ) {
 
     if (
-        !is_singular('tmpizza_project') ||
+        !is_singular(
+            'tmpizza_project'
+        ) ||
         !in_the_loop() ||
         !is_main_query()
     ) {
@@ -481,11 +574,20 @@ function tmpizza_append_github_project_buttons(
 
     $post_id = get_the_ID();
 
-    $repository_url = get_post_meta(
+    $download_enabled = get_post_meta(
         $post_id,
-        '_tmpizza_github_repository_url',
+        '_tmpizza_github_download_enabled',
         true
     );
+
+    if ($download_enabled !== 'yes') {
+        return $content;
+    }
+
+    $repository_url =
+        tmpizza_get_github_repository_url(
+            $post_id
+        );
 
     $download_url =
         tmpizza_get_github_download_url(
@@ -493,24 +595,14 @@ function tmpizza_append_github_project_buttons(
         );
 
     if (
-        empty($repository_url) &&
+        empty($repository_url) ||
         empty($download_url)
     ) {
         return $content;
     }
 
-    $button_label = get_post_meta(
-        $post_id,
-        '_tmpizza_github_button_label',
-        true
-    );
-
-    if (empty($button_label)) {
-        $button_label =
-            'Letöltés GitHubról';
-    }
-
     ob_start();
+
     ?>
 
     <section
@@ -524,11 +616,14 @@ function tmpizza_append_github_project_buttons(
                 GitHub
             </span>
 
-            <h2>Próbáld ki a projektet</h2>
+            <h2>
+                Töltsd le a projektet
+            </h2>
 
             <p>
-                Töltsd le a legfrissebb elérhető
-                változatot közvetlenül a GitHubról.
+                A projekt legfrissebb elérhető
+                forráskódját közvetlenül a
+                GitHubról töltheted le.
             </p>
 
         </div>
@@ -536,59 +631,58 @@ function tmpizza_append_github_project_buttons(
 
         <div class="project-github-buttons">
 
-            <?php if ($download_url) : ?>
+            <a
+                class="
+                    project-github-button
+                    project-github-button-primary
+                "
+                href="<?php
+                echo esc_url(
+                    $download_url
+                );
+                ?>"
+            >
 
-                <a
-                    class="
-                        project-github-button
-                        project-github-button-primary
-                    "
-                    href="<?php
-                    echo esc_url($download_url);
-                    ?>"
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
                 >
+                    <path
+                        d="
+                            M12 3v12
+                            m0 0 5-5
+                            m-5 5-5-5
+                            M5 19h14
+                        "
+                    />
+                </svg>
 
-                    <svg
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <path
-                            d="M12 3v12m0 0 5-5m-5 5-5-5M5 19h14"
-                        />
-                    </svg>
+                Letöltés GitHubról
 
-                    <?php
-                    echo esc_html($button_label);
-                    ?>
-
-                </a>
-
-            <?php endif; ?>
+            </a>
 
 
-            <?php if ($repository_url) : ?>
+            <a
+                class="
+                    project-github-button
+                    project-github-button-secondary
+                "
+                href="<?php
+                echo esc_url(
+                    $repository_url
+                );
+                ?>"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
 
-                <a
-                    class="
-                        project-github-button
-                        project-github-button-secondary
-                    "
-                    href="<?php
-                    echo esc_url($repository_url);
-                    ?>"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
+                Repository megnyitása
 
-                    Repository megnyitása
+                <span aria-hidden="true">
+                    ↗
+                </span>
 
-                    <span aria-hidden="true">
-                        ↗
-                    </span>
-
-                </a>
-
-            <?php endif; ?>
+            </a>
 
         </div>
 
@@ -596,7 +690,8 @@ function tmpizza_append_github_project_buttons(
 
     <?php
 
-    return $content . ob_get_clean();
+    return $content
+        . ob_get_clean();
 }
 
 add_filter(
@@ -608,13 +703,17 @@ add_filter(
 
 /*
 ==========================================
-GitHub stylesheet
+Load GitHub download stylesheet
 ==========================================
 */
 
 function tmpizza_github_download_assets() {
 
-    if (!is_singular('tmpizza_project')) {
+    if (
+        !is_singular(
+            'tmpizza_project'
+        )
+    ) {
         return;
     }
 
@@ -625,15 +724,21 @@ function tmpizza_github_download_assets() {
         get_template_directory()
         . $relative_path;
 
-    $version = file_exists($absolute_path)
-        ? filemtime($absolute_path)
+    $version = file_exists(
+        $absolute_path
+    )
+        ? filemtime(
+            $absolute_path
+        )
         : wp_get_theme()->get('Version');
 
     wp_enqueue_style(
         'tmpizza-github-downloads',
         get_template_directory_uri()
             . $relative_path,
-        array('tmpizza-responsive'),
+        array(
+            'tmpizza-responsive',
+        ),
         $version
     );
 }
