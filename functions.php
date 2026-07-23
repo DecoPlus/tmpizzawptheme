@@ -82,10 +82,6 @@ function tmpizza_assets() {
     );
 
 
-    /*
-    Base
-    */
-
     wp_enqueue_style(
         'tmpizza-base',
         $theme_uri . '/assets/css/base.css',
@@ -93,10 +89,6 @@ function tmpizza_assets() {
         tmpizza_asset_version('/assets/css/base.css')
     );
 
-
-    /*
-    Header
-    */
 
     wp_enqueue_style(
         'tmpizza-header',
@@ -106,10 +98,6 @@ function tmpizza_assets() {
     );
 
 
-    /*
-    Hero
-    */
-
     wp_enqueue_style(
         'tmpizza-hero',
         $theme_uri . '/assets/css/hero.css',
@@ -117,10 +105,6 @@ function tmpizza_assets() {
         tmpizza_asset_version('/assets/css/hero.css')
     );
 
-
-    /*
-    Buttons
-    */
 
     wp_enqueue_style(
         'tmpizza-buttons',
@@ -130,10 +114,6 @@ function tmpizza_assets() {
     );
 
 
-    /*
-    Divisions
-    */
-
     wp_enqueue_style(
         'tmpizza-divisions',
         $theme_uri . '/assets/css/divisions.css',
@@ -141,10 +121,6 @@ function tmpizza_assets() {
         tmpizza_asset_version('/assets/css/divisions.css')
     );
 
-
-    /*
-    Projects
-    */
 
     wp_enqueue_style(
         'tmpizza-projects',
@@ -154,10 +130,6 @@ function tmpizza_assets() {
     );
 
 
-    /*
-    About
-    */
-
     wp_enqueue_style(
         'tmpizza-about',
         $theme_uri . '/assets/css/about.css',
@@ -166,21 +138,29 @@ function tmpizza_assets() {
     );
 
 
-    /*
-    Animations
-    */
+    wp_enqueue_style(
+        'tmpizza-join',
+        $theme_uri . '/assets/css/join.css',
+        array('tmpizza-about'),
+        tmpizza_asset_version('/assets/css/join.css')
+    );
+
+
+    wp_enqueue_style(
+        'tmpizza-footer',
+        $theme_uri . '/assets/css/footer.css',
+        array('tmpizza-join'),
+        tmpizza_asset_version('/assets/css/footer.css')
+    );
+
 
     wp_enqueue_style(
         'tmpizza-animations',
         $theme_uri . '/assets/css/animations.css',
-        array('tmpizza-about'),
+        array('tmpizza-footer'),
         tmpizza_asset_version('/assets/css/animations.css')
     );
 
-
-    /*
-    Responsive overrides
-    */
 
     wp_enqueue_style(
         'tmpizza-responsive',
@@ -189,10 +169,6 @@ function tmpizza_assets() {
         tmpizza_asset_version('/assets/css/responsive.css')
     );
 
-
-    /*
-    JavaScript
-    */
 
     wp_enqueue_script(
         'tmpizza-main-js',
