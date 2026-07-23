@@ -480,33 +480,96 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     );
 
-    /*
-     * Mobile navigation
-     */
+ /*
+ * Mobile navigation
+ */
 
-    if (menuToggle && navigation) {
-        menuToggle.addEventListener(
-            "click",
-            () => {
-                const isOpen =
-                    document.body.classList.toggle(
-                        "menu-open"
-                    );
-
-                menuToggle.setAttribute(
-                    "aria-expanded",
-                    String(isOpen)
-                );
-
-                menuToggle.setAttribute(
-                    "aria-label",
-                    isOpen
-                        ? "Menü bezárása"
-                        : "Menü megnyitása"
-                );
-            }
+if (menuToggle && navigation) {
+    const closeMobileMenu = () => {
+        document.body.classList.remove(
+            "menu-open"
         );
 
+        menuToggle.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        menuToggle.setAttribute(
+            "aria-label",
+            "Menü megnyitása"
+        );
+    };
+
+    menuToggle.addEventListener(
+        "click",
+        (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const isOpen =
+                document.body.classList.toggle(
+                    "menu-open"
+                );
+
+            menuToggle.setAttribute(
+                "aria-expanded",
+                String(isOpen)
+            );
+
+            menuToggle.setAttribute(
+                "aria-label",
+                isOpen
+                    ? "Menü bezárása"
+                    : "Menü megnyitása"
+            );
+        }
+    );
+
+    navigation
+        .querySelectorAll("a")
+        .forEach((link) => {
+            link.addEventListener(
+                "click",
+                closeMobileMenu
+            );
+        });
+
+    document.addEventListener(
+        "click",
+        (event) => {
+            if (
+                !document.body.classList.contains(
+                    "menu-open"
+                )
+            ) {
+                return;
+            }
+
+            const clickedInsideMenu =
+                navigation.contains(event.target);
+
+            const clickedToggle =
+                menuToggle.contains(event.target);
+
+            if (
+                !clickedInsideMenu &&
+                !clickedToggle
+            ) {
+                closeMobileMenu();
+            }
+        }
+    );
+
+    document.addEventListener(
+        "keydown",
+        (event) => {
+            if (event.key === "Escape") {
+                closeMobileMenu();
+            }
+        }
+    );
+}
         navigation
             .querySelectorAll("a")
             .forEach((link) => {
