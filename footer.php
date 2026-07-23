@@ -9,10 +9,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/*
- * Projektarchívum címe
- */
-
 $projects_url = get_post_type_archive_link(
     'tmpizza_project'
 );
@@ -21,23 +17,12 @@ if (!$projects_url) {
     $projects_url = home_url('/#projects');
 }
 
-/*
- * Közösségi linkek
- *
- * A két üres idézőjel közé illeszd be
- * később a saját linkjeidet.
- */
-
-$discord_url = 'https://discord.gg/2JyHYtj3xm';
-$github_url  = 'https://github.com/DecoPlus/tmpizzawptheme';
+$discord_url = '';
+$github_url  = '';
 
 $discord_href = $discord_url !== ''
     ? $discord_url
     : home_url('/#join');
-
-/*
- * WordPressben létrehozott részlegek lekérése
- */
 
 $footer_divisions = get_terms(
     array(
@@ -86,9 +71,7 @@ if (is_wp_error($footer_divisions)) {
 
                 <div class="site-footer__column">
 
-                    <span>
-                        Felfedezés
-                    </span>
+                    <span>Felfedezés</span>
 
                     <a
                         href="<?php
@@ -130,9 +113,7 @@ if (is_wp_error($footer_divisions)) {
 
                 <div class="site-footer__column">
 
-                    <span>
-                        Közösség
-                    </span>
+                    <span>Közösség</span>
 
                     <a
                         href="<?php
@@ -174,9 +155,7 @@ if (is_wp_error($footer_divisions)) {
 
                 <div class="site-footer__column">
 
-                    <span>
-                        Részlegek
-                    </span>
+                    <span>Részlegek</span>
 
                     <?php if (!empty($footer_divisions)) : ?>
 
@@ -213,7 +192,7 @@ if (is_wp_error($footer_divisions)) {
                             );
                             ?>"
                         >
-                            Game Development
+                            The Monitor Pixel
                         </a>
 
                         <a
@@ -223,7 +202,7 @@ if (is_wp_error($footer_divisions)) {
                             );
                             ?>"
                         >
-                            Film Studio
+                            Tárcsa Productions
                         </a>
 
                         <a
@@ -261,11 +240,27 @@ if (is_wp_error($footer_divisions)) {
 
             </div>
 
-            <a
-                href="<?php echo esc_url(home_url('/#home')); ?>"
-            >
-                Vissza az elejére ↑
-            </a>
+            <div class="site-footer__bottom-actions">
+
+                <button
+                    class="site-footer__view-switch"
+                    type="button"
+                    data-device-reset
+                >
+                    Nézet módosítása
+                </button>
+
+                <a
+                    href="<?php
+                    echo esc_url(
+                        home_url('/#home')
+                    );
+                    ?>"
+                >
+                    Vissza az elejére ↑
+                </a>
+
+            </div>
 
         </div>
 

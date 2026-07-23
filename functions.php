@@ -15,7 +15,8 @@ TM Pizza Theme
 Load theme modules
 */
 
-require_once get_template_directory() . '/inc/projects.php';
+require_once get_template_directory()
+    . '/inc/projects.php';
 
 
 /*
@@ -42,22 +43,31 @@ function tmpizza_setup() {
 
     register_nav_menus(
         array(
-            'primary' => __('Primary Menu', 'tmpizza'),
+            'primary' => __(
+                'Primary Menu',
+                'tmpizza'
+            ),
         )
     );
 }
 
-add_action('after_setup_theme', 'tmpizza_setup');
+add_action(
+    'after_setup_theme',
+    'tmpizza_setup'
+);
 
 
 /*
-Asset version based on file modification time
+Asset version based on modification time
 */
 
-function tmpizza_asset_version($relative_path) {
+function tmpizza_asset_version(
+    $relative_path
+) {
 
     $absolute_path =
-        get_template_directory() . $relative_path;
+        get_template_directory()
+        . $relative_path;
 
     if (file_exists($absolute_path)) {
         return filemtime($absolute_path);
@@ -73,7 +83,13 @@ Load theme assets
 
 function tmpizza_assets() {
 
-    $theme_uri = get_template_directory_uri();
+    $theme_uri =
+        get_template_directory_uri();
+
+
+    /*
+    Google Fonts
+    */
 
     wp_enqueue_style(
         'tmpizza-fonts',
@@ -81,6 +97,11 @@ function tmpizza_assets() {
         array(),
         null
     );
+
+
+    /*
+    Global theme styles
+    */
 
     $styles = array(
         'base',
@@ -99,16 +120,21 @@ function tmpizza_assets() {
     foreach ($styles as $style) {
 
         $relative_path =
-            '/assets/css/' . $style . '.css';
+            '/assets/css/'
+            . $style
+            . '.css';
 
         wp_enqueue_style(
             'tmpizza-' . $style,
             $theme_uri . $relative_path,
             array($dependency),
-            tmpizza_asset_version($relative_path)
+            tmpizza_asset_version(
+                $relative_path
+            )
         );
 
-        $dependency = 'tmpizza-' . $style;
+        $dependency =
+            'tmpizza-' . $style;
     }
 
 
@@ -116,7 +142,11 @@ function tmpizza_assets() {
     Project archive stylesheet
     */
 
-    if (is_post_type_archive('tmpizza_project')) {
+    if (
+        is_post_type_archive(
+            'tmpizza_project'
+        )
+    ) {
 
         wp_enqueue_style(
             'tmpizza-project-archive',
@@ -128,7 +158,8 @@ function tmpizza_assets() {
             )
         );
 
-        $dependency = 'tmpizza-project-archive';
+        $dependency =
+            'tmpizza-project-archive';
     }
 
 
@@ -136,7 +167,11 @@ function tmpizza_assets() {
     Single project stylesheet
     */
 
-    if (is_singular('tmpizza_project')) {
+    if (
+        is_singular(
+            'tmpizza_project'
+        )
+    ) {
 
         wp_enqueue_style(
             'tmpizza-single-project',
@@ -148,29 +183,55 @@ function tmpizza_assets() {
             )
         );
 
-        $dependency = 'tmpizza-single-project';
+        $dependency =
+            'tmpizza-single-project';
     }
 
 
     /*
-    Animations and responsive overrides
+    Animations
     */
 
     wp_enqueue_style(
         'tmpizza-animations',
-        $theme_uri . '/assets/css/animations.css',
+        $theme_uri
+            . '/assets/css/animations.css',
         array($dependency),
         tmpizza_asset_version(
             '/assets/css/animations.css'
         )
     );
 
+
+    /*
+    Responsive styles
+    */
+
     wp_enqueue_style(
         'tmpizza-responsive',
-        $theme_uri . '/assets/css/responsive.css',
+        $theme_uri
+            . '/assets/css/responsive.css',
         array('tmpizza-animations'),
         tmpizza_asset_version(
             '/assets/css/responsive.css'
+        )
+    );
+
+
+    /*
+    Device mode overrides
+
+    This is intentionally loaded after the
+    responsive stylesheet.
+    */
+
+    wp_enqueue_style(
+        'tmpizza-device-choice',
+        $theme_uri
+            . '/assets/css/device-choice.css',
+        array('tmpizza-responsive'),
+        tmpizza_asset_version(
+            '/assets/css/device-choice.css'
         )
     );
 
@@ -181,7 +242,8 @@ function tmpizza_assets() {
 
     wp_enqueue_script(
         'tmpizza-main-js',
-        $theme_uri . '/assets/js/main.js',
+        $theme_uri
+            . '/assets/js/main.js',
         array(),
         tmpizza_asset_version(
             '/assets/js/main.js'
@@ -190,4 +252,7 @@ function tmpizza_assets() {
     );
 }
 
-add_action('wp_enqueue_scripts', 'tmpizza_assets');
+add_action(
+    'wp_enqueue_scripts',
+    'tmpizza_assets'
+);

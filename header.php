@@ -9,13 +9,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-/*
- * Projektarchívum címe.
- *
- * Ha valamiért még nem érhető el az archívum,
- * visszaesik a kezdőlapi projektszekcióra.
- */
-
 $projects_url = get_post_type_archive_link(
     'tmpizza_project'
 );
@@ -25,16 +18,10 @@ if (!$projects_url) {
 }
 
 /*
- * Ide később beillesztheted a Discord-meghívódat.
- *
- * Példa:
- * $discord_url = 'https://discord.gg/abcdefgh';
- *
- * Amíg üres, a kezdőlap csatlakozási részére mutat.
+ * Add your Discord invitation here.
  */
 
-$discord_url = 'https://discord.gg/2JyHYtj3xm';
-$github_url  = 'https://github.com/DecoPlus/tmpizzawptheme';
+$discord_url = '';
 
 $discord_href = $discord_url !== ''
     ? $discord_url
@@ -54,6 +41,38 @@ $discord_href = $discord_url !== ''
         content="width=device-width, initial-scale=1"
     >
 
+    <script>
+        /*
+         * Apply a previously selected device mode
+         * before the page is painted.
+         */
+
+        (function () {
+            try {
+                const savedMode = localStorage.getItem(
+                    "tmpizza-device-view"
+                );
+
+                const allowedModes = [
+                    "desktop",
+                    "mobile",
+                    "tablet"
+                ];
+
+                if (allowedModes.includes(savedMode)) {
+                    document.documentElement.classList.add(
+                        "view-" + savedMode
+                    );
+                }
+            } catch (error) {
+                /*
+                 * The page still works if localStorage
+                 * is unavailable.
+                 */
+            }
+        }());
+    </script>
+
     <?php wp_head(); ?>
 
 </head>
@@ -61,6 +80,13 @@ $discord_href = $discord_url !== ''
 <body <?php body_class(); ?>>
 
 <?php wp_body_open(); ?>
+
+<?php
+get_template_part(
+    'template-parts/device',
+    'dilemma'
+);
+?>
 
 <header class="site-header">
 
@@ -140,7 +166,9 @@ $discord_href = $discord_url !== ''
                         button
                         button--primary
                     "
-                    href="<?php echo esc_url($discord_href); ?>"
+                    href="<?php
+                    echo esc_url($discord_href);
+                    ?>"
                     <?php if ($discord_url !== '') : ?>
                         target="_blank"
                         rel="noopener noreferrer"
