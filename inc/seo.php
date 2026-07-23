@@ -25,12 +25,14 @@ function tmpizza_get_meta_description() {
 
 
     /*
-    Individual project or normal page
+    Individual project, newsroom post
+    or normal page
     */
 
     if (is_singular()) {
 
-        $post_id = get_queried_object_id();
+        $post_id =
+            get_queried_object_id();
 
         if ($post_id) {
 
@@ -41,25 +43,30 @@ function tmpizza_get_meta_description() {
 
             } else {
 
-                $content = get_post_field(
-                    'post_content',
-                    $post_id
-                );
+                $content =
+                    get_post_field(
+                        'post_content',
+                        $post_id
+                    );
 
-                $description = wp_trim_words(
-                    wp_strip_all_tags(
-                        strip_shortcodes($content)
-                    ),
-                    30,
-                    '…'
-                );
+                $description =
+                    wp_trim_words(
+                        wp_strip_all_tags(
+                            strip_shortcodes(
+                                $content
+                            )
+                        ),
+                        30,
+                        '…'
+                    );
             }
 
-            $description = preg_replace(
-                '/\s+/',
-                ' ',
-                trim($description)
-            );
+            $description =
+                preg_replace(
+                    '/\s+/',
+                    ' ',
+                    trim($description)
+                );
 
             if (!empty($description)) {
                 return $description;
@@ -84,6 +91,21 @@ function tmpizza_get_meta_description() {
 
 
     /*
+    Newsroom archive
+    */
+
+    if (
+        is_post_type_archive(
+            'tmpizza_news'
+        )
+    ) {
+        return
+            'TM Pizza hírek, fejlesztési naplók, '
+            . 'bejelentések és projektfrissítések.';
+    }
+
+
+    /*
     Project division archive
     */
 
@@ -93,12 +115,14 @@ function tmpizza_get_meta_description() {
         )
     ) {
 
-        $term = get_queried_object();
+        $term =
+            get_queried_object();
 
         if (
             $term instanceof WP_Term &&
             !empty($term->description)
         ) {
+
             return preg_replace(
                 '/\s+/',
                 ' ',
@@ -109,6 +133,7 @@ function tmpizza_get_meta_description() {
         }
 
         if ($term instanceof WP_Term) {
+
             return sprintf(
                 'A TM Pizza %s részlegének projektjei és munkái.',
                 $term->name
@@ -130,16 +155,30 @@ function tmpizza_get_current_page_url() {
 
     if (is_singular()) {
 
-        $permalink = get_permalink();
+        $permalink =
+            get_permalink();
 
         if ($permalink) {
             return $permalink;
         }
     }
 
-    if (is_front_page() || is_home()) {
+
+    /*
+    Front page
+    */
+
+    if (
+        is_front_page() ||
+        is_home()
+    ) {
         return home_url('/');
     }
+
+
+    /*
+    Project archive
+    */
 
     if (
         is_post_type_archive(
@@ -147,14 +186,41 @@ function tmpizza_get_current_page_url() {
         )
     ) {
 
-        $archive_url = get_post_type_archive_link(
-            'tmpizza_project'
-        );
+        $archive_url =
+            get_post_type_archive_link(
+                'tmpizza_project'
+            );
 
         if ($archive_url) {
             return $archive_url;
         }
     }
+
+
+    /*
+    Newsroom archive
+    */
+
+    if (
+        is_post_type_archive(
+            'tmpizza_news'
+        )
+    ) {
+
+        $newsroom_url =
+            get_post_type_archive_link(
+                'tmpizza_news'
+            );
+
+        if ($newsroom_url) {
+            return $newsroom_url;
+        }
+    }
+
+
+    /*
+    Project division archive
+    */
 
     if (
         is_tax(
@@ -162,14 +228,20 @@ function tmpizza_get_current_page_url() {
         )
     ) {
 
-        $term_url = get_term_link(
-            get_queried_object()
-        );
+        $term_url =
+            get_term_link(
+                get_queried_object()
+            );
 
         if (!is_wp_error($term_url)) {
             return $term_url;
         }
     }
+
+
+    /*
+    General fallback
+    */
 
     global $wp;
 
@@ -177,8 +249,10 @@ function tmpizza_get_current_page_url() {
         isset($wp->request) &&
         $wp->request !== ''
     ) {
+
         return home_url(
-            '/' . ltrim(
+            '/'
+            . ltrim(
                 $wp->request,
                 '/'
             )
@@ -198,12 +272,14 @@ Social preview image
 function tmpizza_get_social_image() {
 
     /*
-    Use project featured image first
+    Use the featured image for projects,
+    newsroom posts and normal pages.
     */
 
     if (is_singular()) {
 
-        $post_id = get_queried_object_id();
+        $post_id =
+            get_queried_object_id();
 
         if (
             $post_id &&
@@ -211,25 +287,31 @@ function tmpizza_get_social_image() {
         ) {
 
             $thumbnail_id =
-                get_post_thumbnail_id($post_id);
+                get_post_thumbnail_id(
+                    $post_id
+                );
 
-            $image = wp_get_attachment_image_src(
-                $thumbnail_id,
-                'full'
-            );
+            $image =
+                wp_get_attachment_image_src(
+                    $thumbnail_id,
+                    'full'
+                );
 
             if ($image) {
 
-                $image_alt = get_post_meta(
-                    $thumbnail_id,
-                    '_wp_attachment_image_alt',
-                    true
-                );
+                $image_alt =
+                    get_post_meta(
+                        $thumbnail_id,
+                        '_wp_attachment_image_alt',
+                        true
+                    );
 
                 if (empty($image_alt)) {
-                    $image_alt = get_the_title(
-                        $post_id
-                    );
+
+                    $image_alt =
+                        get_the_title(
+                            $post_id
+                        );
                 }
 
                 return array(
@@ -261,7 +343,8 @@ function tmpizza_get_social_image() {
             'url'    => $fallback_url,
             'width'  => 1200,
             'height' => 630,
-            'alt'    => 'TM Pizza – játékok, filmek és kreatív projektek',
+            'alt'    =>
+                'TM Pizza – játékok, filmek és kreatív projektek',
         );
     }
 
@@ -270,7 +353,8 @@ function tmpizza_get_social_image() {
     Fall back to the WordPress Site Icon
     */
 
-    $site_icon = get_site_icon_url(512);
+    $site_icon =
+        get_site_icon_url(512);
 
     if ($site_icon) {
 
@@ -294,7 +378,10 @@ Meta and Open Graph tags
 
 function tmpizza_output_seo_meta() {
 
-    if (is_admin() || is_feed()) {
+    if (
+        is_admin() ||
+        is_feed()
+    ) {
         return;
     }
 
@@ -313,8 +400,16 @@ function tmpizza_output_seo_meta() {
     $social_image =
         tmpizza_get_social_image();
 
+    $is_article =
+        is_singular(
+            array(
+                'tmpizza_project',
+                'tmpizza_news',
+            )
+        );
+
     $og_type =
-        is_singular('tmpizza_project')
+        $is_article
             ? 'article'
             : 'website';
 
@@ -337,7 +432,9 @@ function tmpizza_output_seo_meta() {
     <meta
         property="og:locale"
         content="<?php
-        echo esc_attr(get_locale());
+        echo esc_attr(
+            get_locale()
+        );
         ?>"
     >
 
@@ -469,6 +566,29 @@ function tmpizza_output_seo_meta() {
 
     <?php endif; ?>
 
+
+    <?php if ($is_article) : ?>
+
+        <meta
+            property="article:published_time"
+            content="<?php
+            echo esc_attr(
+                get_the_date('c')
+            );
+            ?>"
+        >
+
+        <meta
+            property="article:modified_time"
+            content="<?php
+            echo esc_attr(
+                get_the_modified_date('c')
+            );
+            ?>"
+        >
+
+    <?php endif; ?>
+
     <?php
 }
 
@@ -495,10 +615,12 @@ function tmpizza_output_website_schema() {
         home_url('/');
 
     $organization_id =
-        $home_url . '#organization';
+        $home_url
+        . '#organization';
 
     $website_id =
-        $home_url . '#website';
+        $home_url
+        . '#website';
 
     $organization = array(
         '@type' => 'Organization',
@@ -507,29 +629,31 @@ function tmpizza_output_website_schema() {
         'url'   => $home_url,
     );
 
-    $site_icon = get_site_icon_url(512);
+    $site_icon =
+        get_site_icon_url(512);
 
     if ($site_icon) {
 
-        $organization['logo'] = array(
-            '@type'  => 'ImageObject',
-            'url'    => $site_icon,
-            'width'  => 512,
-            'height' => 512,
-        );
+        $organization['logo'] =
+            array(
+                '@type'  => 'ImageObject',
+                'url'    => $site_icon,
+                'width'  => 512,
+                'height' => 512,
+            );
     }
 
     $website = array(
-        '@type'       => 'WebSite',
-        '@id'         => $website_id,
-        'url'         => $home_url,
-        'name'        => 'TM Pizza',
+        '@type'         => 'WebSite',
+        '@id'           => $website_id,
+        'url'           => $home_url,
+        'name'          => 'TM Pizza',
         'alternateName' => 'TM Pizza Studio',
-        'description' =>
+        'description'   =>
             tmpizza_get_meta_description(),
-        'inLanguage'  =>
+        'inLanguage'    =>
             get_bloginfo('language'),
-        'publisher'   => array(
+        'publisher'     => array(
             '@id' => $organization_id,
         ),
     );
@@ -544,15 +668,13 @@ function tmpizza_output_website_schema() {
 
     ?>
 
-    <script type="application/ld+json">
-        <?php
+    <script type="application/ld+json"><?php
         echo wp_json_encode(
             $schema,
             JSON_UNESCAPED_SLASHES
             | JSON_UNESCAPED_UNICODE
         );
-        ?>
-    </script>
+    ?></script>
 
     <?php
 }

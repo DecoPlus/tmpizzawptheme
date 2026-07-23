@@ -1,29 +1,38 @@
 <?php
+/**
+ * TM Pizza theme functions
+ *
+ * @package TMPizza
+ */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-/*
-==========================================
-TM Pizza Theme
-==========================================
-*/
-
 
 /*
+==========================================
 Load theme modules
+==========================================
 */
 
 require_once get_template_directory()
     . '/inc/projects.php';
 
 require_once get_template_directory()
+    . '/inc/newsroom.php';
+
+require_once get_template_directory()
+    . '/inc/github-downloads.php';
+
+require_once get_template_directory()
     . '/inc/seo.php';
 
 
 /*
+==========================================
 Theme setup
+==========================================
 */
 
 function tmpizza_setup() {
@@ -61,7 +70,9 @@ add_action(
 
 
 /*
+==========================================
 Asset version based on modification time
+==========================================
 */
 
 function tmpizza_asset_version(
@@ -81,7 +92,9 @@ function tmpizza_asset_version(
 
 
 /*
+==========================================
 Load theme assets
+==========================================
 */
 
 function tmpizza_assets() {
@@ -255,4 +268,82 @@ function tmpizza_assets() {
 add_action(
     'wp_enqueue_scripts',
     'tmpizza_assets'
+);
+
+
+/*
+==========================================
+Automatically add Newsroom to primary menu
+==========================================
+*/
+
+function tmpizza_add_newsroom_menu_item(
+    $items,
+    $args
+) {
+
+    if (
+        !isset($args->theme_location) ||
+        $args->theme_location !== 'primary'
+    ) {
+        return $items;
+    }
+
+    $newsroom_url =
+        get_post_type_archive_link(
+            'tmpizza_news'
+        );
+
+    if (!$newsroom_url) {
+        return $items;
+    }
+
+
+    /*
+    Avoid adding it twice if it was already
+    manually added in WordPress.
+    */
+
+    if (
+        strpos(
+            $items,
+            untrailingslashit($newsroom_url)
+        ) !== false
+    ) {
+        return $items;
+    }
+
+    $is_active =
+        is_post_type_archive('tmpizza_news') ||
+        is_singular('tmpizza_news');
+
+    $classes =
+        'menu-item tmpizza-newsroom-menu-item';
+
+    if ($is_active) {
+        $classes .= ' current-menu-item';
+    }
+
+    $aria_current =
+        $is_active
+            ? ' aria-current="page"'
+            : '';
+
+    $items .= sprintf(
+        '<li class="%1$s">'
+        . '<a href="%2$s"%3$s>Newsroom</a>'
+        . '</li>',
+        esc_attr($classes),
+        esc_url($newsroom_url),
+        $aria_current
+    );
+
+    return $items;
+}
+
+add_filter(
+    'wp_nav_menu_items',
+    'tmpizza_add_newsroom_menu_item',
+    10,
+    2
 );
