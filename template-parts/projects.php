@@ -1,3 +1,22 @@
+
+
+<?php
+
+$bpm_project = get_page_by_path(
+    'bpm',
+    OBJECT,
+    'tmpizza_project'
+);
+
+$bpm_project_url = $bpm_project instanceof WP_Post
+    ? get_permalink($bpm_project)
+    : get_post_type_archive_link('tmpizza_project');
+
+?>
+
+
+
+
 <section class="projects-section" id="projects">
 
     <div
@@ -125,8 +144,8 @@
 
                         <a
                             class="project-card__action"
-                            href="#"
-                            aria-label="SPACE projekt megtekintése"
+                            href="<?php echo esc_url($bpm_project_url); ?>"
+                            aria-label="BPM projekt megtekintése"
                         >
                             Projekt megtekintése
                             <span aria-hidden="true">↗</span>
