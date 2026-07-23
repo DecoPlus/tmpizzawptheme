@@ -1,3 +1,58 @@
+<?php
+/**
+ * Site footer
+ *
+ * @package TMPizza
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/*
+ * Projektarchívum címe
+ */
+
+$projects_url = get_post_type_archive_link(
+    'tmpizza_project'
+);
+
+if (!$projects_url) {
+    $projects_url = home_url('/#projects');
+}
+
+/*
+ * Közösségi linkek
+ *
+ * A két üres idézőjel közé illeszd be
+ * később a saját linkjeidet.
+ */
+
+$discord_url = 'https://discord.gg/2JyHYtj3xm';
+$github_url  = 'https://github.com/DecoPlus/tmpizzawptheme';
+
+$discord_href = $discord_url !== ''
+    ? $discord_url
+    : home_url('/#join');
+
+/*
+ * WordPressben létrehozott részlegek lekérése
+ */
+
+$footer_divisions = get_terms(
+    array(
+        'taxonomy'   => 'tmpizza_division',
+        'hide_empty' => false,
+        'orderby'    => 'name',
+        'order'      => 'ASC',
+    )
+);
+
+if (is_wp_error($footer_divisions)) {
+    $footer_divisions = array();
+}
+?>
+
 <footer class="site-footer">
 
     <div class="container">
@@ -8,10 +63,16 @@
 
                 <a
                     class="site-footer__logo"
-                    href="<?php echo esc_url(home_url('/')); ?>"
+                    href="<?php
+                    echo esc_url(home_url('/'));
+                    ?>"
+                    aria-label="TM Pizza kezdőlap"
                 >
-                    <span></span>
+
+                    <span aria-hidden="true"></span>
+
                     TM Pizza
+
                 </a>
 
                 <p>
@@ -25,36 +86,157 @@
 
                 <div class="site-footer__column">
 
-                    <span>Felfedezés</span>
+                    <span>
+                        Felfedezés
+                    </span>
 
-                    <a href="#home">Kezdőlap</a>
-                    <a href="#divisions">Részlegek</a>
-                    <a href="#projects">Projektek</a>
-                    <a href="#about">Rólunk</a>
+                    <a
+                        href="<?php
+                        echo esc_url(home_url('/'));
+                        ?>"
+                    >
+                        Kezdőlap
+                    </a>
+
+                    <a
+                        href="<?php
+                        echo esc_url(
+                            home_url('/#divisions')
+                        );
+                        ?>"
+                    >
+                        Részlegek
+                    </a>
+
+                    <a
+                        href="<?php
+                        echo esc_url($projects_url);
+                        ?>"
+                    >
+                        Projektek
+                    </a>
+
+                    <a
+                        href="<?php
+                        echo esc_url(
+                            home_url('/#about')
+                        );
+                        ?>"
+                    >
+                        Rólunk
+                    </a>
 
                 </div>
 
                 <div class="site-footer__column">
 
-                    <span>Közösség</span>
+                    <span>
+                        Közösség
+                    </span>
 
-                    <!-- Ide kerül majd a saját Discord-linked. -->
-                    <a href="https://discord.gg/2JyHYtj3xm">Discord ↗</a>
+                    <a
+                        href="<?php
+                        echo esc_url($discord_href);
+                        ?>"
+                        <?php if ($discord_url !== '') : ?>
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        <?php endif; ?>
+                    >
+                        Discord ↗
+                    </a>
 
-                    <!-- Ide kerülhet majd a GitHub repo linked. -->
-                    <a href="https://github.com/DecoPlus/tmpizzawptheme">GitHub ↗</a>
+                    <?php if ($github_url !== '') : ?>
 
-                    <a href="#join">Csatlakozás</a>
+                        <a
+                            href="<?php
+                            echo esc_url($github_url);
+                            ?>"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            GitHub ↗
+                        </a>
+
+                    <?php endif; ?>
+
+                    <a
+                        href="<?php
+                        echo esc_url(
+                            home_url('/#join')
+                        );
+                        ?>"
+                    >
+                        Csatlakozás
+                    </a>
 
                 </div>
 
                 <div class="site-footer__column">
 
-                    <span>Részlegek</span>
+                    <span>
+                        Részlegek
+                    </span>
 
-                    <a href="#divisions">The Monitor Pixel</a>
-                    <a href="#divisions">Tárcsa Productions</a>
-                    <a href="#divisions">Workshoppies!</a>
+                    <?php if (!empty($footer_divisions)) : ?>
+
+                        <?php
+                        foreach (
+                            $footer_divisions as $footer_division
+                        ) :
+                            ?>
+
+                            <a
+                                href="<?php
+                                echo esc_url(
+                                    $projects_url
+                                    . '#division-'
+                                    . $footer_division->slug
+                                );
+                                ?>"
+                            >
+                                <?php
+                                echo esc_html(
+                                    $footer_division->name
+                                );
+                                ?>
+                            </a>
+
+                        <?php endforeach; ?>
+
+                    <?php else : ?>
+
+                        <a
+                            href="<?php
+                            echo esc_url(
+                                home_url('/#divisions')
+                            );
+                            ?>"
+                        >
+                            Game Development
+                        </a>
+
+                        <a
+                            href="<?php
+                            echo esc_url(
+                                home_url('/#divisions')
+                            );
+                            ?>"
+                        >
+                            Film Studio
+                        </a>
+
+                        <a
+                            href="<?php
+                            echo esc_url(
+                                home_url('/#divisions')
+                            );
+                            ?>"
+                        >
+                            Workshop
+                        </a>
+
+                    <?php endif; ?>
 
                 </div>
 
@@ -71,7 +253,7 @@
 
             <div class="site-footer__status">
 
-                <span></span>
+                <span aria-hidden="true"></span>
 
                 <p>
                     A weboldal saját WordPress témával működik
@@ -79,7 +261,9 @@
 
             </div>
 
-            <a href="#home">
+            <a
+                href="<?php echo esc_url(home_url('/#home')); ?>"
+            >
                 Vissza az elejére ↑
             </a>
 
@@ -92,4 +276,5 @@
 <?php wp_footer(); ?>
 
 </body>
+
 </html>

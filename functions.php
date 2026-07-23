@@ -25,7 +25,6 @@ Theme setup
 function tmpizza_setup() {
 
     add_theme_support('title-tag');
-
     add_theme_support('post-thumbnails');
 
     add_theme_support(
@@ -52,7 +51,7 @@ add_action('after_setup_theme', 'tmpizza_setup');
 
 
 /*
-Return an asset's modification time
+Asset version based on file modification time
 */
 
 function tmpizza_asset_version($relative_path) {
@@ -76,7 +75,6 @@ function tmpizza_assets() {
 
     $theme_uri = get_template_directory_uri();
 
-
     wp_enqueue_style(
         'tmpizza-fonts',
         'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap',
@@ -84,119 +82,110 @@ function tmpizza_assets() {
         null
     );
 
-
-    wp_enqueue_style(
-        'tmpizza-base',
-        $theme_uri . '/assets/css/base.css',
-        array('tmpizza-fonts'),
-        tmpizza_asset_version('/assets/css/base.css')
+    $styles = array(
+        'base',
+        'header',
+        'hero',
+        'buttons',
+        'divisions',
+        'projects',
+        'about',
+        'join',
+        'footer',
     );
 
+    $dependency = 'tmpizza-fonts';
 
-    wp_enqueue_style(
-        'tmpizza-header',
-        $theme_uri . '/assets/css/header.css',
-        array('tmpizza-base'),
-        tmpizza_asset_version('/assets/css/header.css')
-    );
+    foreach ($styles as $style) {
 
+        $relative_path =
+            '/assets/css/' . $style . '.css';
 
-    wp_enqueue_style(
-        'tmpizza-hero',
-        $theme_uri . '/assets/css/hero.css',
-        array('tmpizza-header'),
-        tmpizza_asset_version('/assets/css/hero.css')
-    );
+        wp_enqueue_style(
+            'tmpizza-' . $style,
+            $theme_uri . $relative_path,
+            array($dependency),
+            tmpizza_asset_version($relative_path)
+        );
 
-
-    wp_enqueue_style(
-        'tmpizza-buttons',
-        $theme_uri . '/assets/css/buttons.css',
-        array('tmpizza-hero'),
-        tmpizza_asset_version('/assets/css/buttons.css')
-    );
+        $dependency = 'tmpizza-' . $style;
+    }
 
 
-    wp_enqueue_style(
-        'tmpizza-divisions',
-        $theme_uri . '/assets/css/divisions.css',
-        array('tmpizza-buttons'),
-        tmpizza_asset_version('/assets/css/divisions.css')
-    );
+    /*
+    Project archive stylesheet
+    */
+
+    if (is_post_type_archive('tmpizza_project')) {
+
+        wp_enqueue_style(
+            'tmpizza-project-archive',
+            $theme_uri
+                . '/assets/css/project-archive.css',
+            array($dependency),
+            tmpizza_asset_version(
+                '/assets/css/project-archive.css'
+            )
+        );
+
+        $dependency = 'tmpizza-project-archive';
+    }
 
 
-    wp_enqueue_style(
-        'tmpizza-projects',
-        $theme_uri . '/assets/css/projects.css',
-        array('tmpizza-divisions'),
-        tmpizza_asset_version('/assets/css/projects.css')
-    );
-
-
-    wp_enqueue_style(
-        'tmpizza-about',
-        $theme_uri . '/assets/css/about.css',
-        array('tmpizza-projects'),
-        tmpizza_asset_version('/assets/css/about.css')
-    );
-
-
-    wp_enqueue_style(
-        'tmpizza-join',
-        $theme_uri . '/assets/css/join.css',
-        array('tmpizza-about'),
-        tmpizza_asset_version('/assets/css/join.css')
-    );
-
-
-    wp_enqueue_style(
-        'tmpizza-footer',
-        $theme_uri . '/assets/css/footer.css',
-        array('tmpizza-join'),
-        tmpizza_asset_version('/assets/css/footer.css')
-    );
-
-
-    $animation_dependency = 'tmpizza-footer';
-
+    /*
+    Single project stylesheet
+    */
 
     if (is_singular('tmpizza_project')) {
 
         wp_enqueue_style(
             'tmpizza-single-project',
-            $theme_uri . '/assets/css/single-project.css',
-            array('tmpizza-footer'),
+            $theme_uri
+                . '/assets/css/single-project.css',
+            array($dependency),
             tmpizza_asset_version(
                 '/assets/css/single-project.css'
             )
         );
 
-        $animation_dependency =
-            'tmpizza-single-project';
+        $dependency = 'tmpizza-single-project';
     }
 
+
+    /*
+    Animations and responsive overrides
+    */
 
     wp_enqueue_style(
         'tmpizza-animations',
         $theme_uri . '/assets/css/animations.css',
-        array($animation_dependency),
-        tmpizza_asset_version('/assets/css/animations.css')
+        array($dependency),
+        tmpizza_asset_version(
+            '/assets/css/animations.css'
+        )
     );
-
 
     wp_enqueue_style(
         'tmpizza-responsive',
         $theme_uri . '/assets/css/responsive.css',
         array('tmpizza-animations'),
-        tmpizza_asset_version('/assets/css/responsive.css')
+        tmpizza_asset_version(
+            '/assets/css/responsive.css'
+        )
     );
 
+
+    /*
+    JavaScript
+    */
 
     wp_enqueue_script(
         'tmpizza-main-js',
         $theme_uri . '/assets/js/main.js',
         array(),
-        tmpizza_asset_version('/assets/js/main.js'),
+        tmpizza_asset_version(
+            '/assets/js/main.js'
+        ),
         true
     );
 }
