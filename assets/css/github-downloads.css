@@ -162,3 +162,27 @@ Project GitHub downloads
         width: 100%;
     }
 }
+
+/*
+==========================================
+Fix GitHub button link styling
+==========================================
+*/
+
+.project-github-panel a.project-github-button,
+.project-github-panel a.project-github-button:visited {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+.project-github-panel a.project-github-button:hover,
+.project-github-panel a.project-github-button:focus,
+.project-github-panel a.project-github-button:active {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+.project-github-panel a.project-github-button svg {
+    color: inherit;
+    stroke: currentColor;
+}
