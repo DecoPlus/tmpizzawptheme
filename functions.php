@@ -12,6 +12,13 @@ TM Pizza Theme
 
 
 /*
+Load theme modules
+*/
+
+require_once get_template_directory() . '/inc/projects.php';
+
+
+/*
 Theme setup
 */
 
@@ -45,7 +52,7 @@ add_action('after_setup_theme', 'tmpizza_setup');
 
 
 /*
-Return an asset's modification time.
+Return an asset's modification time
 */
 
 function tmpizza_asset_version($relative_path) {
@@ -69,10 +76,6 @@ function tmpizza_assets() {
 
     $theme_uri = get_template_directory_uri();
 
-
-    /*
-    Google Fonts
-    */
 
     wp_enqueue_style(
         'tmpizza-fonts',
@@ -154,10 +157,29 @@ function tmpizza_assets() {
     );
 
 
+    $animation_dependency = 'tmpizza-footer';
+
+
+    if (is_singular('tmpizza_project')) {
+
+        wp_enqueue_style(
+            'tmpizza-single-project',
+            $theme_uri . '/assets/css/single-project.css',
+            array('tmpizza-footer'),
+            tmpizza_asset_version(
+                '/assets/css/single-project.css'
+            )
+        );
+
+        $animation_dependency =
+            'tmpizza-single-project';
+    }
+
+
     wp_enqueue_style(
         'tmpizza-animations',
         $theme_uri . '/assets/css/animations.css',
-        array('tmpizza-footer'),
+        array($animation_dependency),
         tmpizza_asset_version('/assets/css/animations.css')
     );
 
