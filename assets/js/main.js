@@ -479,8 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
             passive: true,
         }
     );
-
- /*
+/*
  * Mobile navigation
  */
 
@@ -570,25 +569,6 @@ if (menuToggle && navigation) {
         }
     );
 }
-        navigation
-            .querySelectorAll("a")
-            .forEach((link) => {
-                link.addEventListener(
-                    "click",
-                    () => {
-                        document.body.classList.remove(
-                            "menu-open"
-                        );
-
-                        menuToggle.setAttribute(
-                            "aria-expanded",
-                            "false"
-                        );
-                    }
-                );
-            });
-    }
-
     /*
      * Scroll reveal
      */

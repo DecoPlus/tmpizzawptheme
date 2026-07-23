@@ -18,6 +18,9 @@ Load theme modules
 require_once get_template_directory()
     . '/inc/projects.php';
 
+require_once get_template_directory()
+    . '/inc/seo.php';
+
 
 /*
 Theme setup
@@ -100,7 +103,7 @@ function tmpizza_assets() {
 
 
     /*
-    Global theme styles
+    Global styles
     */
 
     $styles = array(
@@ -139,7 +142,7 @@ function tmpizza_assets() {
 
 
     /*
-    Project archive stylesheet
+    Project archive
     */
 
     if (
@@ -164,7 +167,7 @@ function tmpizza_assets() {
 
 
     /*
-    Single project stylesheet
+    Single project
     */
 
     if (
@@ -219,10 +222,7 @@ function tmpizza_assets() {
 
 
     /*
-    Device mode overrides
-
-    This is intentionally loaded after the
-    responsive stylesheet.
+    Device selector
     */
 
     wp_enqueue_style(
